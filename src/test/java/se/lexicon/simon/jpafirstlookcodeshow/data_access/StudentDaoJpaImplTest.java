@@ -1,4 +1,5 @@
 package se.lexicon.simon.jpafirstlookcodeshow.data_access;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,16 +8,21 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import se.lexicon.simon.jpafirstlookcodeshow.entity.Student;
 
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @Transactional
+
 class StudentDaoJpaImplTest {
 
 
@@ -37,6 +43,11 @@ class StudentDaoJpaImplTest {
 
     }
 
+    @AfterEach
+    void tearDown() {
+        entityManager.flush();
+        entityManager.clear();
+    }
 
     @Test
     void testSave() {
@@ -65,10 +76,24 @@ class StudentDaoJpaImplTest {
         //Assert
         assertNotNull(expected);
         assertEquals(expected, actual);
+
     }
+
+
 
     @Test
     void findAll() {
+        // Arrange
+        int expectedSize = 1;
+
+
+        // Act
+        List<Student> all = testDao.findAll();
+
+        //Assert
+        assertNotNull(all);
+        assertEquals(testObject, all.get(0));
+        assertEquals(expectedSize, all.size());
     }
 
     @Test
